@@ -51,11 +51,14 @@ const NoteDetailPage = () => {
 
     setSaving(true)
     try {
-      await api.put(`/notes/${id}`, note)
+      await api.put(`/notes/${id}`,  {
+        ...note,
+        tag: note.tag?.trim() || null
+      })
       toast.success("Note updated successfully")
       navigate("/")
     } catch (error) {
-      console.log("Error in saving the note:". error)
+      console.log("Error in saving the note:", error)
       toast.error("Failed to update note")
     }finally{
       setSaving(false)
@@ -103,6 +106,20 @@ const NoteDetailPage = () => {
                   onChange={(e) => setNote({ ...note, title: e.target.value })}
                 />
               </div>
+
+              <div className="form-control mb-4">
+                <label className="label">
+                  <span className="label-text">Tag (Optional)</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. School, Programming, Personal"
+                  className="input input-bordered"
+                  value={note.tag || ""}
+                  onChange={(e) => setNote({ ...note, tag: e.target.value })}
+                />
+              </div>
+
               <div className="form-control mb-4">
                 <label className="label">
                   <span className="label-text">Content</span>

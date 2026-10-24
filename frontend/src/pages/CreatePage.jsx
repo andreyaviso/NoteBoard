@@ -8,6 +8,7 @@ import api from '../lib/axios';
 const CreatePage = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [tag, setTag] = useState("");
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate()
@@ -24,7 +25,8 @@ const CreatePage = () => {
     try{
       await api.post("/notes", {
         title,
-        content
+        content,
+        tag: tag.trim() || null
       })
       toast.success("Note created successfully!")
       navigate("/")
@@ -65,6 +67,19 @@ const CreatePage = () => {
                     className="input input-bordered"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-control mb-4">
+                  <label className="label">
+                    <span className="label-text">Tag (Optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. School, Programming, Personal"
+                    className="input input-bordered"
+                    value={tag}
+                    onChange={(e) => setTag(e.target.value)}
                   />
                 </div>
 

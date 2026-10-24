@@ -24,8 +24,8 @@ export async function getNoteById(req, res){
 
 export async function createNote(req, res){
     try{
-        const {title, content} = req.body // It extracts the title and content properties from req.body and stores them in variables with the same names.
-        const newNote = new Note({title, content})
+        const {title, content, tag} = req.body // It extracts the title and content properties from req.body and stores them in variables with the same names.
+        const newNote = new Note({title, content, tag: tag || null})
 
         const savedNote = await newNote.save()
         res.status(201).json(savedNote)
@@ -37,8 +37,8 @@ export async function createNote(req, res){
 
 export async function updateNote(req, res){
     try {
-        const {title, content} = req.body;
-        const updatedNote = await Note.findByIdAndUpdate(req.params.id, {title,content});
+        const {title, content, tag} = req.body;
+        const updatedNote = await Note.findByIdAndUpdate(req.params.id, {title,content, tag});
         if(!updatedNote) return res.status(404).json({message: "Note not found"})
 
         res.status(200).json({message:"Note updated sucessfully"})

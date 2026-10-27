@@ -13,8 +13,11 @@ const noteSchema = new mongoose.Schema(
         },
 
         tag: {
-            type: String,
-            required: false,
+            // storing the MongoDB ID of the tag
+            type: mongoose.Schema.Types.ObjectId,
+            // tells Mongoose which model the ObjectId refers to 
+            // from Tag.js -> "const Tag = mongoose.model("Tag", tagSchema)
+            ref: "Tag",
             default: null
         }
     },

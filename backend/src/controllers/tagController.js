@@ -1,6 +1,6 @@
-import Tag from "../model/Tag";
+import Tag from "../model/Tag.js";
 
-export const createtag = async (req, res) =>{
+export const createTag = async (req, res) =>{
     try {
         const {name} = req.body;
 

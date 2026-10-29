@@ -10,6 +10,7 @@ const NoteDetailPage = () => {
   const [note, setNote] = useState(null);
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [tags, setTags] = useState([]);
 
   const navigate = useNavigate()
 
@@ -29,6 +30,22 @@ const NoteDetailPage = () => {
     }
     fetchNote();
   }, [id])
+
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const res = await api.get("/tags");
+        setTags(res.data);
+      } catch (error) {
+        console.error("Error fetching tags:", error);
+        toast.error("Failed to load tags");
+      }
+    };
+
+    fetchTags();
+  }, []);
+
 
   const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this note?")) return;
@@ -53,7 +70,7 @@ const NoteDetailPage = () => {
     try {
       await api.put(`/notes/${id}`,  {
         ...note,
-        tag: note.tag?.trim() || null
+        tag: note.tag?._id || null
       })
       toast.success("Note updated successfully")
       navigate("/")
@@ -107,18 +124,36 @@ const NoteDetailPage = () => {
                 />
               </div>
 
+
               <div className="form-control mb-4">
                 <label className="label">
                   <span className="label-text">Tag (Optional)</span>
                 </label>
-                <input
-                  type="text"
-                  placeholder="e.g. School, Programming, Personal"
-                  className="input input-bordered"
-                  value={note.tag || ""}
-                  onChange={(e) => setNote({ ...note, tag: e.target.value })}
-                />
+
+                <select
+                  className="select select-bordered"
+                  value={note.tag?._id || ""}
+                  onChange={(e) => {
+                    const selectedTag = tags.find(
+                      (t) => t._id === e.target.value
+                    );
+
+                    setNote({
+                      ...note,
+                      tag: selectedTag || null
+                    });
+                  }}
+                >
+                  <option value="">No Tag</option>
+
+                  {tags.map((t) => (
+                    <option key={t._id} value={t._id}>
+                      {t.name}
+                    </option>
+                  ))}
+                </select>
               </div>
+
 
               <div className="form-control mb-4">
                 <label className="label">

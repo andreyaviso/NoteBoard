@@ -8,10 +8,25 @@ import api from '../lib/axios';
 const CreatePage = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [tag, setTag] = useState("");
   const [loading, setLoading] = useState(false);
+  const [tag, setTag] = useState(""); // stores ID of the tag the user selected
+  const [tags, setTags] = useState([]); // stores the list of all available tags retrieved from MongoDB
 
   const navigate = useNavigate()
+
+  useEffect(() =>{
+    const fetchTags = async () =>{
+      try {
+        const res = await api.get("/tags");
+        setTags(res.data);
+      } catch (error) {
+        console.error("Error fetching tags:", error);
+        toast.error("Failed to load tags");
+      }
+    };
+
+    fetchTags();
+  }, []); // the empty dependency array [] means the effect is set up when components mounts, rather than on every render
 
   const handleSubmit = async (e) =>{
     e.preventDefault();
@@ -26,14 +41,14 @@ const CreatePage = () => {
       await api.post("/notes", {
         title,
         content,
-        tag: tag.trim() || null
+        tag: tag || null
       })
       toast.success("Note created successfully!")
       navigate("/")
     } catch (error) {
       console.log("Error creating note", error)
 
-      if (error.response.status === 429){
+      if (error.response?.status === 429){
         toast.error("Slow down! You're creating notes too fast", {
           duration:4000,
           icon: "💀",
@@ -70,18 +85,27 @@ const CreatePage = () => {
                   />
                 </div>
 
+
                 <div className="form-control mb-4">
                   <label className="label">
                     <span className="label-text">Tag (Optional)</span>
                   </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. School, Programming, Personal"
-                    className="input input-bordered"
+
+                  <select
+                    className="select select-bordered"
                     value={tag}
                     onChange={(e) => setTag(e.target.value)}
-                  />
+                  >
+                    <option value="">No Tag</option>
+
+                    {tags.map((t) => (
+                      <option key={t._id} value={t._id}>
+                        {t.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
+
 
                 <div className="form-control mb-4">
                   <label className="label">

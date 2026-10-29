@@ -34,7 +34,7 @@ const NoteCard = ({note, setNotes}) => {
               <h3 className="card-title text-base-content">{note.title}</h3>
                 {note.tag && (
                 <span className="badge badge-primary badge-sm w-fit">
-                    {note.tag}
+                    {note.tag?.name}
                 </span>
                 )}
               <p className="text-base-content/70 line-clamp-3">{note.content}</p>

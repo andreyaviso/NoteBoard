@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router'
 import { PlusIcon } from 'lucide-react'
+import { TagsIcon } from "lucide-react";
 
 const Navbar = () => {
   return (
@@ -14,6 +15,11 @@ const Navbar = () => {
                     <Link to={"/create"} className="btn bg-[#818CF8] text-gray-900 border-none hover:bg-[#6366F1]">
                         <PlusIcon className="size-5"/>
                         <span>New Note</span>
+                    </Link>
+                    
+                    <Link to="/tags" className="btn btn-ghost">
+                        <TagsIcon className="size-5" />
+                        <span>Tags</span>
                     </Link>
                 </div>
             </div>

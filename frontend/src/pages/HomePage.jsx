@@ -12,6 +12,8 @@ const HomePage = () => {
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [notes, setNotes] = useState([])
   const [loading, setLoading] = useState(true)
+  const [tags, setTags] = useState([]);
+  const [selectedTag, setSelectedTag] = useState("");
 
   useEffect(() => {
     const fetchNotes = async () =>{
@@ -34,23 +36,75 @@ const HomePage = () => {
     fetchNotes();
   },[])
 
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const res = await api.get("/tags");
+        setTags(res.data);
+      } catch (error) {
+        console.error("Error fetching tags:", error);
+        toast.error("Failed to load tags");
+      }
+    };
+
+    fetchTags();
+  }, []);
+
+
+  const filteredNotes = selectedTag
+  ? notes.filter((note) => note.tag?._id === selectedTag)
+  : notes;
+
+
   return (
     <div className="min-h-screen">
       <Navbar />
       {isRateLimited && <RateLimitedUI />}
 
-      <div className="max-w-7xl mx-auto p-4 mt-6">
+      <div className="max-w-7xl mx-auto px-4 py-3 mt-2">
+        <div className="flex justify-end mb-6">
+          <select
+            className="select select-bordered w-full max-w-xs"
+            value={selectedTag}
+            onChange={(e) => setSelectedTag(e.target.value)}
+          >
+            <option value="">All Notes</option>
+
+            {tags.map((tag) => (
+              <option key={tag._id} value={tag._id}>
+                {tag.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {loading && <div className="text-center text-primary py-10">Loading notes...</div>}
 
-        {notes.length === 0 && !isRateLimited && <NotesNotFound/>}
+        
+        {!loading && !isRateLimited && (
+          <>
+            {notes.length === 0 && <NotesNotFound />}
 
-        {notes.length > 0 && !isRateLimited && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"> 
-            {notes.map((note) =>
-              <NoteCard key={note._id} note={note} setNotes={setNotes}/>
+            {notes.length > 0 && filteredNotes.length === 0 && (
+              <p className="text-center text-base-content/60 py-10">
+                No notes found for this tag.
+              </p>
             )}
-          </div>
+          </>
         )}
+
+        {filteredNotes.length > 0 && !isRateLimited && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredNotes.map((note) => (
+            <NoteCard
+              key={note._id}
+              note={note}
+              setNotes={setNotes}
+            />
+          ))}
+        </div>
+      )}
+
 
       </div>
     </div>
